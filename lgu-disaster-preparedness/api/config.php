@@ -16,9 +16,9 @@ define('DB_NAME', 'lgu_disaster_preparedness');
 define('GEMINI_API_KEY', 'AIzaSyCz-eh9uov4Sdb53gQxreO8RD0zsKccJ8Q');
 
 // Gemini API Endpoint
-// Using v1beta with gemini-pro (most stable and widely supported)
-// Alternative: v1beta/models/gemini-1.5-flash or v1beta/models/gemini-1.5-pro
-define('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent');
+// Using v1 with gemini-2.5-flash (latest and fastest model)
+// Alternative: v1/models/gemini-2.5-pro or v1beta/models/gemini-1.5-pro
+define('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent');
 // // API Response Settings
 define('API_TIMEOUT', 30); // seconds
 define('MAX_RETRIES', 3);

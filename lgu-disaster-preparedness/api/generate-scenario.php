@@ -62,6 +62,13 @@ if (!$result || !isset($result['data'])) {
 
 $scenarioData = $result['data'];
 
+// Add input parameters to response so frontend can populate form fields
+$scenarioData['disaster_type'] = $disasterType;
+$scenarioData['difficulty'] = $difficulty;
+$scenarioData['incident_time'] = $incidentTime;
+$scenarioData['weather_condition'] = $weatherCondition;
+$scenarioData['location_type'] = $locationType;
+
 // Return the generated scenario
 sendSuccessResponse($scenarioData, 'Scenario generated successfully');
 
@@ -95,7 +102,7 @@ Create a detailed disaster scenario with the following specifications:
 5. Make it appropriate for {$difficulty} level training
 6. Consider the weather and time of day in the scenario
 
-**Output Format (JSON):**
+**Output Format (JSON ONLY - No markdown, no code blocks, just raw JSON):**
 {
   \"title\": \"A concise, descriptive scenario title (max 60 characters)\",
   \"description\": \"A detailed 2-3 paragraph scenario description that sets the scene and describes the disaster situation\",
@@ -118,7 +125,7 @@ Create a detailed disaster scenario with the following specifications:
   ]
 }
 
-Make the scenario realistic, engaging, and appropriate for training LGU disaster response teams. Use specific details about the location and make it feel authentic to the Philippine context.";
+**CRITICAL: Return ONLY valid JSON. Do not include markdown code blocks, explanations, or any text outside the JSON object. Start with { and end with }.**";
 
     if (!empty($params['additional_context'])) {
         $prompt .= "\n\n**Additional Context:** " . $params['additional_context'];
@@ -144,10 +151,10 @@ function callGeminiAPI($apiKey, $prompt) {
             ]
         ],
         'generationConfig' => [
-            'temperature' => 0.9,
+            'temperature' => 0.7,
             'topK' => 40,
             'topP' => 0.95,
-            'maxOutputTokens' => 2048,
+            'maxOutputTokens' => 2048
         ]
     ];
     
@@ -199,7 +206,26 @@ function callGeminiAPI($apiKey, $prompt) {
         return ['error' => $errorMsg, 'data' => null];
     }
     
-    if (!isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+    // Handle different response formats
+    $generatedText = null;
+    
+    // Check for standard text response
+    if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+        $generatedText = $data['candidates'][0]['content']['parts'][0]['text'];
+    }
+    // Check for structured JSON response (when responseMimeType is used)
+    elseif (isset($data['candidates'][0]['content']['parts'][0])) {
+        $part = $data['candidates'][0]['content']['parts'][0];
+        // If it's already JSON, use it directly
+        if (isset($part['text'])) {
+            $generatedText = $part['text'];
+        } elseif (is_array($part) && !isset($part['text'])) {
+            // Response might be structured differently
+            $generatedText = json_encode($part);
+        }
+    }
+    
+    if (!$generatedText) {
         $errorMsg = "Unexpected API response structure";
         if (isset($data['error'])) {
             $errorMsg = $data['error']['message'] ?? "API Error";
@@ -210,33 +236,67 @@ function callGeminiAPI($apiKey, $prompt) {
         return ['error' => $errorMsg, 'data' => null];
     }
     
-    $generatedText = $data['candidates'][0]['content']['parts'][0]['text'];
-    
     // Try to extract JSON from the response
     $scenarioData = extractJsonFromResponse($generatedText);
     
     if (!$scenarioData) {
-        // If JSON extraction fails, create a structured response from the text
+        // If JSON extraction fails, try to parse as text and create structured response
+        if (DEBUG_MODE) {
+            error_log("Failed to extract JSON, attempting text parsing. Response: " . substr($generatedText, 0, 500));
+        }
         $scenarioData = parseTextResponse($generatedText);
     }
+    
+    // Validate required fields
+    $scenarioData = validateScenarioData($scenarioData);
     
     return ['error' => null, 'data' => $scenarioData];
 }
 
 /**
  * Extract JSON from Gemini response
+ * Handles markdown code blocks, plain JSON, and direct JSON responses
  */
 function extractJsonFromResponse($text) {
-    // Try to find JSON in the response
+    if (empty($text)) {
+        return null;
+    }
+    
+    // First, try to decode the entire text as JSON (in case it's already valid JSON)
+    $data = json_decode($text, true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
+        return $data;
+    }
+    
+    // Remove markdown code blocks if present
+    $text = preg_replace('/```json\s*/i', '', $text);
+    $text = preg_replace('/```\s*/', '', $text);
+    $text = trim($text);
+    
+    // Try to decode again after removing markdown
+    $data = json_decode($text, true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($data)) {
+        return $data;
+    }
+    
+    // Try to find JSON object in the response
     $jsonStart = strpos($text, '{');
     $jsonEnd = strrpos($text, '}');
     
-    if ($jsonStart === false || $jsonEnd === false) {
+    if ($jsonStart === false || $jsonEnd === false || $jsonEnd <= $jsonStart) {
         return null;
     }
     
     $jsonString = substr($text, $jsonStart, $jsonEnd - $jsonStart + 1);
     $data = json_decode($jsonString, true);
+    
+    // Validate that we got valid JSON
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        if (DEBUG_MODE) {
+            error_log("JSON decode error: " . json_last_error_msg() . " - Text: " . substr($jsonString, 0, 200));
+        }
+        return null;
+    }
     
     return $data;
 }
@@ -261,11 +321,46 @@ function parseTextResponse($text) {
     // Try to extract title (first line or first sentence)
     if (!empty($lines[0])) {
         $firstLine = trim($lines[0]);
-        if (strlen($firstLine) < 100) {
+        // Remove markdown headers if present
+        $firstLine = preg_replace('/^#+\s*/', '', $firstLine);
+        if (strlen($firstLine) < 100 && !empty($firstLine)) {
             $scenarioData['title'] = $firstLine;
         }
     }
     
     return $scenarioData;
+}
+
+/**
+ * Validate and ensure all required fields are present in scenario data
+ */
+function validateScenarioData($data) {
+    if (!is_array($data)) {
+        $data = [];
+    }
+    
+    // Ensure all required fields exist with defaults
+    $validated = [
+        'title' => $data['title'] ?? 'AI Generated Scenario',
+        'description' => $data['description'] ?? '',
+        'initial_conditions' => $data['initial_conditions'] ?? '',
+        'challenges' => is_array($data['challenges'] ?? null) ? $data['challenges'] : [],
+        'expected_actions' => is_array($data['expected_actions'] ?? null) ? $data['expected_actions'] : [],
+        'safety_notes' => $data['safety_notes'] ?? '',
+        'learning_objectives' => is_array($data['learning_objectives'] ?? null) ? $data['learning_objectives'] : []
+    ];
+    
+    // Ensure arrays are not empty (at least have one item)
+    if (empty($validated['challenges'])) {
+        $validated['challenges'] = ['Address immediate safety concerns'];
+    }
+    if (empty($validated['expected_actions'])) {
+        $validated['expected_actions'] = ['Assess the situation'];
+    }
+    if (empty($validated['learning_objectives'])) {
+        $validated['learning_objectives'] = ['Improve disaster response coordination'];
+    }
+    
+    return $validated;
 }
 

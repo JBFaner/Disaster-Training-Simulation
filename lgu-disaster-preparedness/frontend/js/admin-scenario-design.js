@@ -857,8 +857,34 @@ class ScenarioDesignManager {
             document.getElementById('scenarioTitle').value = data.title;
         }
         
+        // Combine description and initial_conditions for complete scenario description
+        let fullDescription = '';
         if (data.description) {
-            document.getElementById('scenarioDescription').value = data.description;
+            fullDescription = data.description;
+        }
+        if (data.initial_conditions) {
+            if (fullDescription) {
+                fullDescription += '\n\n**Initial Conditions:**\n' + data.initial_conditions;
+            } else {
+                fullDescription = '**Initial Conditions:**\n' + data.initial_conditions;
+            }
+        }
+        // Add challenges and expected actions to description for reference
+        if (data.challenges && data.challenges.length > 0) {
+            fullDescription += '\n\n**Key Challenges:**\n';
+            data.challenges.forEach((challenge, index) => {
+                fullDescription += `${index + 1}. ${challenge}\n`;
+            });
+        }
+        if (data.expected_actions && data.expected_actions.length > 0) {
+            fullDescription += '\n\n**Expected Actions:**\n';
+            data.expected_actions.forEach((action, index) => {
+                fullDescription += `${index + 1}. ${action}\n`;
+            });
+        }
+        
+        if (fullDescription) {
+            document.getElementById('scenarioDescription').value = fullDescription.trim();
         }
 
         // Set disaster type if it matches
@@ -873,6 +899,24 @@ class ScenarioDesignManager {
             difficultySelect.value = data.difficulty;
         }
 
+        // Set incident time if available
+        const incidentTimeSelect = document.getElementById('incidentTime');
+        if (data.incident_time && incidentTimeSelect) {
+            incidentTimeSelect.value = data.incident_time;
+        }
+
+        // Set weather condition if available
+        const weatherConditionSelect = document.getElementById('weatherCondition');
+        if (data.weather_condition && weatherConditionSelect) {
+            weatherConditionSelect.value = data.weather_condition;
+        }
+
+        // Set location type if available
+        const locationTypeSelect = document.getElementById('locationType');
+        if (data.location_type && locationTypeSelect) {
+            locationTypeSelect.value = data.location_type;
+        }
+
         // Populate safety notes
         if (data.safety_notes) {
             document.getElementById('safetyNotes').value = data.safety_notes;
@@ -884,26 +928,33 @@ class ScenarioDesignManager {
             learningObjectivesTextarea.value = data.learning_objectives.join('\n• ');
         }
 
-        // Show additional info in a notification
+        // Show summary notification with all generated details
+        let notificationHtml = '<div style="text-align: left;">';
+        
         if (data.challenges && data.challenges.length > 0) {
             const challengesText = data.challenges.map((c, i) => `${i + 1}. ${c}`).join('\n');
-            Swal.fire({
-                title: 'Generated Scenario Details',
-                html: `
-                    <div style="text-align: left;">
-                        <h4>Key Challenges:</h4>
-                        <p style="white-space: pre-line;">${challengesText}</p>
-                        ${data.expected_actions ? `
-                            <h4 style="margin-top: 15px;">Expected Actions:</h4>
-                            <p style="white-space: pre-line;">${data.expected_actions.map((a, i) => `${i + 1}. ${a}`).join('\n')}</p>
-                        ` : ''}
-                    </div>
-                `,
-                icon: 'info',
-                confirmButtonColor: '#0066cc',
-                width: '600px'
-            });
+            notificationHtml += `<h4>Key Challenges:</h4><p style="white-space: pre-line; margin-bottom: 15px;">${challengesText}</p>`;
         }
+        
+        if (data.expected_actions && data.expected_actions.length > 0) {
+            const actionsText = data.expected_actions.map((a, i) => `${i + 1}. ${a}`).join('\n');
+            notificationHtml += `<h4>Expected Actions:</h4><p style="white-space: pre-line; margin-bottom: 15px;">${actionsText}</p>`;
+        }
+        
+        if (data.initial_conditions) {
+            notificationHtml += `<h4>Initial Conditions:</h4><p style="white-space: pre-line; margin-bottom: 15px;">${data.initial_conditions}</p>`;
+        }
+        
+        notificationHtml += '<p style="color: #666; font-size: 12px; margin-top: 15px;">All information has been populated in the form fields below.</p>';
+        notificationHtml += '</div>';
+        
+        Swal.fire({
+            title: 'Scenario Generated Successfully!',
+            html: notificationHtml,
+            icon: 'success',
+            confirmButtonColor: '#0066cc',
+            width: '700px'
+        });
     }
 }
 
