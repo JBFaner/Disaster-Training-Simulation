@@ -6,6 +6,7 @@
     <title>Resource & Equipment Inventory - Admin</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/admin-inventory.css">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
@@ -13,8 +14,7 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="../images/logo.svg" alt="Logo" class="logo">
-                <span class="brand-name">DisasterQC</span>
+                 <img src="images/logo.svg" alt="Logo" class="logo" style="width: 200px; height: 60px;">              
             </div>
             <nav class="sidebar-menu">
                 <ul>
@@ -414,6 +414,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/main.js"></script>
     <script src="js/admin-inventory.js"></script>
 </body>
 </html>

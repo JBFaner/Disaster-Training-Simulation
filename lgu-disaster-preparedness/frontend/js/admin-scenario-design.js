@@ -26,6 +26,14 @@ class ScenarioDesignManager {
             this.switchTab('create-edit');
         });
 
+        // AI Generation
+        document.getElementById('generateWithAIBtn').addEventListener('click', () => {
+            this.openAIGenerationModal();
+        });
+        document.getElementById('aiGenerationForm').addEventListener('submit', (e) => this.generateScenarioWithAI(e));
+        document.getElementById('cancelAIGeneration').addEventListener('click', () => this.closeAIGenerationModal());
+        document.getElementById('closeAIModal').addEventListener('click', () => this.closeAIGenerationModal());
+
         // Form Submission
         document.getElementById('scenarioForm').addEventListener('submit', (e) => this.saveScenario(e));
         document.getElementById('cancelScenarioBtn').addEventListener('click', () => this.confirmCancel());
@@ -152,11 +160,11 @@ class ScenarioDesignManager {
                     <td>${scenario.avgScore}%</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-edit" onclick="scenarioManager.editScenario(${scenario.id})">Edit</button>
-                            <button class="btn-preview" onclick="scenarioManager.previewScenario(${scenario.id})">Preview</button>
-                            <button class="btn-assign" onclick="scenarioManager.assignScenario(${scenario.id})">Assign</button>
-                            <button class="btn-duplicate" onclick="scenarioManager.duplicateScenario(${scenario.id})">Duplicate</button>
-                            <button class="btn-delete" onclick="scenarioManager.deleteScenario(${scenario.id})">Delete</button>
+                            <button class="action-btn btn-edit" onclick="scenarioManager.editScenario(${scenario.id})">Edit</button>
+                            <button class="action-btn btn-preview" onclick="scenarioManager.previewScenario(${scenario.id})">Preview</button>
+                            <button class="action-btn btn-assign" onclick="scenarioManager.assignScenario(${scenario.id})">Assign</button>
+                            <button class="action-btn btn-duplicate" onclick="scenarioManager.duplicateScenario(${scenario.id})">Duplicate</button>
+                            <button class="action-btn btn-delete" onclick="scenarioManager.deleteScenario(${scenario.id})">Delete</button>
                         </div>
                     </td>
                 `;
@@ -664,11 +672,11 @@ class ScenarioDesignManager {
                 <td>${scenario.avgScore}%</td>
                 <td>
                     <div class="action-buttons">
-                        <button class="btn-edit" onclick="scenarioManager.editScenario(${scenario.id})">Edit</button>
-                        <button class="btn-preview" onclick="scenarioManager.previewScenario(${scenario.id})">Preview</button>
-                        <button class="btn-assign" onclick="scenarioManager.assignScenario(${scenario.id})">Assign</button>
-                        <button class="btn-duplicate" onclick="scenarioManager.duplicateScenario(${scenario.id})">Duplicate</button>
-                        <button class="btn-delete" onclick="scenarioManager.deleteScenario(${scenario.id})">Delete</button>
+                        <button class="action-btn btn-edit" onclick="scenarioManager.editScenario(${scenario.id})">Edit</button>
+                        <button class="action-btn btn-preview" onclick="scenarioManager.previewScenario(${scenario.id})">Preview</button>
+                        <button class="action-btn btn-assign" onclick="scenarioManager.assignScenario(${scenario.id})">Assign</button>
+                        <button class="action-btn btn-duplicate" onclick="scenarioManager.duplicateScenario(${scenario.id})">Duplicate</button>
+                        <button class="action-btn btn-delete" onclick="scenarioManager.deleteScenario(${scenario.id})">Delete</button>
                     </div>
                 </td>
             `;
@@ -742,7 +750,229 @@ class ScenarioDesignManager {
     capitalize(str) {
         return str.charAt(0).toUpperCase() + str.slice(1).replace(/-/g, ' ');
     }
+
+    openAIGenerationModal() {
+        document.getElementById('aiGenerationModal').style.display = 'block';
+        document.getElementById('aiGenerationForm').reset();
+    }
+
+    closeAIGenerationModal() {
+        document.getElementById('aiGenerationModal').style.display = 'none';
+    }
+
+    async generateScenarioWithAI(e) {
+        e.preventDefault();
+
+        const form = document.getElementById('aiGenerationForm');
+        const formData = new FormData(form);
+        
+        // Get form values
+        const params = {
+            disaster_type: formData.get('disaster_type'),
+            difficulty: formData.get('difficulty') || 'intermediate',
+            location: 'Barangay San Agustin, Novaliches, Quezon City',
+            incident_time: formData.get('incident_time') || 'day',
+            weather_condition: formData.get('weather_condition') || 'sunny',
+            location_type: formData.get('location_type') || 'building',
+            additional_context: formData.get('additional_context') || ''
+        };
+
+        // Validate
+        if (!params.disaster_type) {
+            Swal.fire({
+                title: 'Validation Error',
+                text: 'Please select a disaster type.',
+                icon: 'error',
+                confirmButtonColor: '#0066cc'
+            });
+            return;
+        }
+
+        // Show loading state
+        const generateBtn = document.getElementById('generateScenarioBtn');
+        const btnText = document.getElementById('generateBtnText');
+        const btnLoading = document.getElementById('generateBtnLoading');
+        
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'inline';
+        generateBtn.disabled = true;
+
+        try {
+            // Call API
+            const response = await fetch('../api/generate-scenario.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to generate scenario');
+            }
+
+            // Populate form with generated scenario
+            this.populateFormWithAIScenario(result.data);
+
+            // Close modal
+            this.closeAIGenerationModal();
+
+            // Switch to create-edit tab if not already there
+            this.switchTab('create-edit');
+
+            // Show success message
+            Swal.fire({
+                title: 'Success!',
+                text: 'Scenario generated successfully! Review and edit as needed.',
+                icon: 'success',
+                confirmButtonColor: '#0066cc'
+            });
+
+        } catch (error) {
+            console.error('AI Generation Error:', error);
+            Swal.fire({
+                title: 'Generation Failed',
+                html: `
+                    <p>${error.message}</p>
+                    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                        Make sure the Gemini API key is configured in config.php
+                    </p>
+                `,
+                icon: 'error',
+                confirmButtonColor: '#0066cc'
+            });
+        } finally {
+            // Reset button state
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+            generateBtn.disabled = false;
+        }
+    }
+
+    populateFormWithAIScenario(data) {
+        // Populate basic fields
+        if (data.title) {
+            document.getElementById('scenarioTitle').value = data.title;
+        }
+        
+        if (data.description) {
+            document.getElementById('scenarioDescription').value = data.description;
+        }
+
+        // Set disaster type if it matches
+        const disasterTypeSelect = document.getElementById('disasterType');
+        if (data.disaster_type) {
+            disasterTypeSelect.value = data.disaster_type;
+        }
+
+        // Set difficulty if available
+        const difficultySelect = document.getElementById('difficultyLevel');
+        if (data.difficulty) {
+            difficultySelect.value = data.difficulty;
+        }
+
+        // Populate safety notes
+        if (data.safety_notes) {
+            document.getElementById('safetyNotes').value = data.safety_notes;
+        }
+
+        // Populate learning objectives
+        if (data.learning_objectives && Array.isArray(data.learning_objectives)) {
+            const learningObjectivesTextarea = document.getElementById('learningObjectives');
+            learningObjectivesTextarea.value = data.learning_objectives.join('\n• ');
+        }
+
+        // Show additional info in a notification
+        if (data.challenges && data.challenges.length > 0) {
+            const challengesText = data.challenges.map((c, i) => `${i + 1}. ${c}`).join('\n');
+            Swal.fire({
+                title: 'Generated Scenario Details',
+                html: `
+                    <div style="text-align: left;">
+                        <h4>Key Challenges:</h4>
+                        <p style="white-space: pre-line;">${challengesText}</p>
+                        ${data.expected_actions ? `
+                            <h4 style="margin-top: 15px;">Expected Actions:</h4>
+                            <p style="white-space: pre-line;">${data.expected_actions.map((a, i) => `${i + 1}. ${a}`).join('\n')}</p>
+                        ` : ''}
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonColor: '#0066cc',
+                width: '600px'
+            });
+        }
+    }
 }
+
+// Dropdown menu toggle function
+function toggleActionMenu(event, scenarioId) {
+    event.stopPropagation();
+    const menu = document.getElementById(`menu-${scenarioId}`);
+    const allMenus = document.querySelectorAll('.dropdown-menu');
+    
+    // Close all other menus and clear inline positioning
+    allMenus.forEach(m => {
+        if (m !== menu) {
+            m.classList.remove('show');
+            m.classList.remove('drop-up');
+            m.style.top = '';
+            m.style.bottom = '';
+            m.style.left = '';
+            m.style.right = '';
+            m.style.position = '';
+        }
+    });
+    
+    // Toggle current menu and adjust direction so it stays in view
+    menu.classList.toggle('show');
+
+    if (menu.classList.contains('show')) {
+        // Use fixed positioning so parent overflow does not clip the menu
+        const btnRect = event.currentTarget.getBoundingClientRect();
+        const menuHeight = menu.scrollHeight;
+        const menuWidth = menu.offsetWidth || 160; // fallback width
+        const spaceBelow = window.innerHeight - btnRect.bottom;
+        const spaceAbove = btnRect.top;
+
+        // Prefer the side with enough space; if neither has enough, use the side with more space
+        let openUp = false;
+        if (spaceBelow >= menuHeight) {
+            openUp = false;
+        } else if (spaceAbove >= menuHeight) {
+            openUp = true;
+        } else {
+            openUp = spaceAbove > spaceBelow;
+        }
+
+        const top = openUp ? btnRect.top - menuHeight - 6 : btnRect.bottom + 6;
+        const left = Math.min(window.innerWidth - menuWidth - 8, Math.max(8, btnRect.left));
+
+        menu.classList.toggle('drop-up', openUp);
+        menu.style.position = 'fixed';
+        menu.style.top = `${top}px`;
+        menu.style.left = `${left}px`;
+        menu.style.right = 'auto';
+        menu.style.bottom = 'auto';
+    } else {
+        // reset when closing
+        menu.style.top = '';
+        menu.style.bottom = '';
+        menu.style.left = '';
+        menu.style.right = '';
+        menu.style.position = '';
+        menu.classList.remove('drop-up');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function() {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.classList.remove('show');
+    });
+});
 
 // Initialize on page load
 const scenarioManager = new ScenarioDesignManager();

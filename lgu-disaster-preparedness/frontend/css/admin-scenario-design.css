@@ -83,7 +83,11 @@
 
 /* Scenarios Table */
 .scenarios-table-wrapper {
+    position: relative;
+    max-height: none !important;
+    height: auto !important;
     overflow-x: auto;
+    overflow-y: visible !important; /* allow dropdowns to spill outside without scrolling */
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -92,6 +96,20 @@
     width: 100%;
     border-collapse: collapse;
     background: white;
+    overflow: visible !important;
+    position: relative;
+}
+
+.scenarios-table thead,
+.scenarios-table tbody {
+    overflow: visible !important;
+}
+
+.scenarios-table tbody,
+.scenarios-table tr,
+.scenarios-table td {
+    overflow: visible !important;
+    position: static;
 }
 
 .scenarios-table thead {
@@ -109,6 +127,16 @@
 .scenarios-table td {
     padding: 12px 15px;
     border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+/* hide any old gear dropdowns if cached markup shows up */
+.action-dropdown {
+    display: none !important;
+}
+
+.scenarios-table td:last-child {
+    overflow: visible;
 }
 
 .scenarios-table tbody tr:hover {
@@ -154,67 +182,53 @@
     color: #842029;
 }
 
-/* Action Buttons */
+/* Keep list container from clipping dropdowns */
+#scenarios-list,
+.admin-content,
+.content {
+    overflow: visible !important;
+}
+
+/* Action buttons (inline, no dropdown) */
 .action-buttons {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
 }
 
-.action-buttons button {
-    padding: 6px 12px;
+.action-btn {
     border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    transition: all 0.2s ease;
+    font-size: 13px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
-.btn-edit {
-    background: #0066cc;
-    color: white;
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.btn-edit:hover {
-    background: #0052a3;
+.action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
-.btn-preview {
-    background: #17a2b8;
-    color: white;
-}
+.action-btn.btn-edit { background: #0d6efd; }
+.action-btn.btn-preview { background: #17a2b8; }
+.action-btn.btn-assign { background: #28a745; }
+.action-btn.btn-duplicate { background: #6c757d; }
+.action-btn.btn-delete { background: #dc3545; }
 
-.btn-preview:hover {
-    background: #138496;
-}
-
-.btn-assign {
-    background: #28a745;
-    color: white;
-}
-
-.btn-assign:hover {
-    background: #218838;
-}
-
-.btn-duplicate {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-duplicate:hover {
-    background: #5a6268;
-}
-
-.btn-delete {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-delete:hover {
-    background: #c82333;
-}
+.action-btn.btn-edit:hover { background: #0b5ed7; }
+.action-btn.btn-preview:hover { background: #138496; }
+.action-btn.btn-assign:hover { background: #218838; }
+.action-btn.btn-duplicate:hover { background: #5a6268; }
+.action-btn.btn-delete:hover { background: #c82333; }
 
 /* Form Styling */
 .scenario-form {

@@ -79,7 +79,9 @@
 
 /* Tables */
 .modules-table-wrapper {
+    position: relative;
     overflow-x: auto;
+    overflow-y: visible; /* let dropdowns spill outside rows */
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }

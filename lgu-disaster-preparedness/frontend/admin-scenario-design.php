@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scenario Design - Admin</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/admin-scenario-design.css">
+    <link rel="stylesheet" href="css/styles.css?v=20241211a">
+    <link rel="stylesheet" href="css/admin-scenario-design.css?v=20241211a">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
@@ -13,8 +14,7 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="../images/logo.svg" alt="Logo" class="logo">
-                <span class="brand-name">DisasterQC</span>
+                 <img src="images/logo.svg" alt="Logo" class="logo" style="width: 200px; height: 60px;">              
             </div>
             <nav class="sidebar-menu">
                 <ul>
@@ -47,7 +47,12 @@
             <section class="content admin-content">
                 <div class="page-header">
                     <h1>Scenario-Based Exercise Design</h1>
-                    <button class="btn-primary" id="createScenarioBtn">+ Create New Scenario</button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary" id="createScenarioBtn">+ Create New Scenario</button>
+                        <button class="btn-secondary" id="generateWithAIBtn" style="background: #28a745; color: white;">
+                            🤖 Generate with AI
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tabs Navigation -->
@@ -108,6 +113,82 @@
 
                 <!-- Tab 2: Create/Edit Scenario -->
                 <div class="tab-content" id="create-edit">
+                    <!-- AI Generation Modal -->
+                    <div id="aiGenerationModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close" id="closeAIModal">&times;</span>
+                            <h3>🤖 Generate Scenario with AI</h3>
+                            <form id="aiGenerationForm">
+                                <div class="form-group">
+                                    <label for="aiDisasterType">Disaster Type *</label>
+                                    <select id="aiDisasterType" name="disaster_type" required>
+                                        <option value="">Select Type</option>
+                                        <option value="earthquake">Earthquake</option>
+                                        <option value="fire">Fire</option>
+                                        <option value="flood">Flood</option>
+                                        <option value="typhoon">Typhoon</option>
+                                        <option value="landslide">Landslide</option>
+                                        <option value="chemical">Chemical Spill</option>
+                                        <option value="multi-hazard">Multi-hazard</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="aiDifficulty">Difficulty Level *</label>
+                                        <select id="aiDifficulty" name="difficulty" required>
+                                            <option value="basic">Basic</option>
+                                            <option value="intermediate" selected>Intermediate</option>
+                                            <option value="advanced">Advanced</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aiLocationType">Location Type *</label>
+                                        <select id="aiLocationType" name="location_type" required>
+                                            <option value="building">Building</option>
+                                            <option value="open-field">Open Field</option>
+                                            <option value="classroom">Classroom</option>
+                                            <option value="street">Street</option>
+                                            <option value="office">Office</option>
+                                            <option value="hospital">Hospital</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="aiIncidentTime">Incident Time</label>
+                                        <select id="aiIncidentTime" name="incident_time">
+                                            <option value="day">Day</option>
+                                            <option value="night">Night</option>
+                                            <option value="dawn">Dawn</option>
+                                            <option value="dusk">Dusk</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="aiWeather">Weather Condition</label>
+                                        <select id="aiWeather" name="weather_condition">
+                                            <option value="sunny">Sunny</option>
+                                            <option value="rainy">Rainy</option>
+                                            <option value="stormy">Stormy</option>
+                                            <option value="windy">Windy</option>
+                                            <option value="foggy">Foggy</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="aiAdditionalContext">Additional Context (Optional)</label>
+                                    <textarea id="aiAdditionalContext" name="additional_context" placeholder="Any specific details or requirements for the scenario..." rows="3"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary" id="generateScenarioBtn">
+                                        <span id="generateBtnText">Generate Scenario</span>
+                                        <span id="generateBtnLoading" style="display: none;">⏳ Generating...</span>
+                                    </button>
+                                    <button type="button" class="btn-secondary" id="cancelAIGeneration">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                     <form id="scenarioForm" class="scenario-form">
                         <!-- Basic Information -->
                         <div class="form-section">
@@ -457,6 +538,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="js/admin-scenario-design.js"></script>
+    <script src="js/main.js?v=20241211a"></script>
+    <script src="js/admin-scenario-design.js?v=20241211a"></script>
 </body>
 </html>
