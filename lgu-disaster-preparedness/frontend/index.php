@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LGU Disaster Preparedness Training & Simulation</title>
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -11,8 +12,7 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="../images/logo.svg" alt="Logo" class="logo">
-                <span class="brand-name">DisasterQC</span>
+                <img src="images/logo.svg" alt="Logo" class="logo" style="width: 200px; height: 60px;">
             </div>
             <nav class="sidebar-menu">
                 <ul>

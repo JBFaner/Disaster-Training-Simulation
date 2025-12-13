@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Training Module Management - Admin</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/admin-training-modules.css">
     <!-- SweetAlert2 CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -14,8 +15,7 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="../images/logo.svg" alt="Logo" class="logo">
-                <span class="brand-name">DisasterQC</span>
+              <img src="images/logo.svg" alt="Logo" class="logo" style="width: 200px; height: 60px;">
             </div>
             <nav class="sidebar-menu">
                 <ul>
@@ -341,6 +341,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/main.js"></script>
     <script src="js/admin-training-modules.js"></script>
 </body>
 </html>

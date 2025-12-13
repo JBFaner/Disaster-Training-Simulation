@@ -152,11 +152,11 @@ class ScenarioDesignManager {
                     <td>${scenario.avgScore}%</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-edit" onclick="scenarioManager.editScenario(${scenario.id})">Edit</button>
-                            <button class="btn-preview" onclick="scenarioManager.previewScenario(${scenario.id})">Preview</button>
-                            <button class="btn-assign" onclick="scenarioManager.assignScenario(${scenario.id})">Assign</button>
-                            <button class="btn-duplicate" onclick="scenarioManager.duplicateScenario(${scenario.id})">Duplicate</button>
-                            <button class="btn-delete" onclick="scenarioManager.deleteScenario(${scenario.id})">Delete</button>
+                            <button class="action-btn btn-edit" onclick="scenarioManager.editScenario(${scenario.id})">Edit</button>
+                            <button class="action-btn btn-preview" onclick="scenarioManager.previewScenario(${scenario.id})">Preview</button>
+                            <button class="action-btn btn-assign" onclick="scenarioManager.assignScenario(${scenario.id})">Assign</button>
+                            <button class="action-btn btn-duplicate" onclick="scenarioManager.duplicateScenario(${scenario.id})">Duplicate</button>
+                            <button class="action-btn btn-delete" onclick="scenarioManager.deleteScenario(${scenario.id})">Delete</button>
                         </div>
                     </td>
                 `;
@@ -664,11 +664,11 @@ class ScenarioDesignManager {
                 <td>${scenario.avgScore}%</td>
                 <td>
                     <div class="action-buttons">
-                        <button class="btn-edit" onclick="scenarioManager.editScenario(${scenario.id})">Edit</button>
-                        <button class="btn-preview" onclick="scenarioManager.previewScenario(${scenario.id})">Preview</button>
-                        <button class="btn-assign" onclick="scenarioManager.assignScenario(${scenario.id})">Assign</button>
-                        <button class="btn-duplicate" onclick="scenarioManager.duplicateScenario(${scenario.id})">Duplicate</button>
-                        <button class="btn-delete" onclick="scenarioManager.deleteScenario(${scenario.id})">Delete</button>
+                        <button class="action-btn btn-edit" onclick="scenarioManager.editScenario(${scenario.id})">Edit</button>
+                        <button class="action-btn btn-preview" onclick="scenarioManager.previewScenario(${scenario.id})">Preview</button>
+                        <button class="action-btn btn-assign" onclick="scenarioManager.assignScenario(${scenario.id})">Assign</button>
+                        <button class="action-btn btn-duplicate" onclick="scenarioManager.duplicateScenario(${scenario.id})">Duplicate</button>
+                        <button class="action-btn btn-delete" onclick="scenarioManager.deleteScenario(${scenario.id})">Delete</button>
                     </div>
                 </td>
             `;
@@ -743,6 +743,73 @@ class ScenarioDesignManager {
         return str.charAt(0).toUpperCase() + str.slice(1).replace(/-/g, ' ');
     }
 }
+
+// Dropdown menu toggle function
+function toggleActionMenu(event, scenarioId) {
+    event.stopPropagation();
+    const menu = document.getElementById(`menu-${scenarioId}`);
+    const allMenus = document.querySelectorAll('.dropdown-menu');
+    
+    // Close all other menus and clear inline positioning
+    allMenus.forEach(m => {
+        if (m !== menu) {
+            m.classList.remove('show');
+            m.classList.remove('drop-up');
+            m.style.top = '';
+            m.style.bottom = '';
+            m.style.left = '';
+            m.style.right = '';
+            m.style.position = '';
+        }
+    });
+    
+    // Toggle current menu and adjust direction so it stays in view
+    menu.classList.toggle('show');
+
+    if (menu.classList.contains('show')) {
+        // Use fixed positioning so parent overflow does not clip the menu
+        const btnRect = event.currentTarget.getBoundingClientRect();
+        const menuHeight = menu.scrollHeight;
+        const menuWidth = menu.offsetWidth || 160; // fallback width
+        const spaceBelow = window.innerHeight - btnRect.bottom;
+        const spaceAbove = btnRect.top;
+
+        // Prefer the side with enough space; if neither has enough, use the side with more space
+        let openUp = false;
+        if (spaceBelow >= menuHeight) {
+            openUp = false;
+        } else if (spaceAbove >= menuHeight) {
+            openUp = true;
+        } else {
+            openUp = spaceAbove > spaceBelow;
+        }
+
+        const top = openUp ? btnRect.top - menuHeight - 6 : btnRect.bottom + 6;
+        const left = Math.min(window.innerWidth - menuWidth - 8, Math.max(8, btnRect.left));
+
+        menu.classList.toggle('drop-up', openUp);
+        menu.style.position = 'fixed';
+        menu.style.top = `${top}px`;
+        menu.style.left = `${left}px`;
+        menu.style.right = 'auto';
+        menu.style.bottom = 'auto';
+    } else {
+        // reset when closing
+        menu.style.top = '';
+        menu.style.bottom = '';
+        menu.style.left = '';
+        menu.style.right = '';
+        menu.style.position = '';
+        menu.classList.remove('drop-up');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function() {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.classList.remove('show');
+    });
+});
 
 // Initialize on page load
 const scenarioManager = new ScenarioDesignManager();

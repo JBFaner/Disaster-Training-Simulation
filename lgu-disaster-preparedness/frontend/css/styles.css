@@ -27,6 +27,23 @@ body {
     overflow-y: auto;
     transition: transform 0.3s ease;
     z-index: 1000;
+    transform: translateX(0); /* Sidebar visible by default */
+}
+
+.sidebar.inactive {
+    transform: translateX(-100%); /* Sidebar hidden state */
+}
+
+.main-content {
+    margin-left: 250px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease;
+}
+
+.main-content.sidebar-closed {
+    margin-left: 0;
 }
 
 .sidebar-header {
@@ -72,13 +89,7 @@ body {
     color: white;
 }
 
-/* Main Content */
-.main-content {
-    margin-left: 250px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+
 
 /* Top Navigation */
 .top-nav {
@@ -91,7 +102,7 @@ body {
 }
 
 .menu-toggle {
-    display: none;
+    display: flex;
     background: none;
     border: none;
     cursor: pointer;
