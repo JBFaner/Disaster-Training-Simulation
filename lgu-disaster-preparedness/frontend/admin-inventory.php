@@ -28,6 +28,33 @@
                     <li><a href="admin-certificate-issuance.php" class="menu-item">Certificate</a></li>
                 </ul>
             </nav>
+            <div class="sidebar-footer">
+                <button onclick="confirmLogout()" class="btn-logout" type="button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5M17 16l4-4m0 0l-4-4m4 4H9"></path>
+                    </svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+            
+            <script>
+            function confirmLogout() {
+                Swal.fire({
+                    title: 'Confirm Logout',
+                    text: 'Are you sure you want to logout? You will need to log in again to access the system.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#c33',
+                    cancelButtonColor: '#999',
+                    confirmButtonText: 'Yes, Logout',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'index.php?logout=1';
+                    }
+                });
+            }
+            </script>
         </aside>
 
         <!-- Main Content -->

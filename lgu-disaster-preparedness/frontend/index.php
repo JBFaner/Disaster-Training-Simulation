@@ -1,3 +1,23 @@
+<?php
+session_start();
+
+// Handle logout
+if (isset($_GET['logout'])) {
+    // Destroy all session data
+    session_destroy();
+    // Clear all session variables
+    $_SESSION = array();
+    // Redirect to login
+    header("Location: admin-login.php");
+    exit;
+}
+
+// Redirect if not logged in
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: admin-login.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +26,7 @@
     <title>LGU Disaster Preparedness Training & Simulation</title>
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
     <div class="container">
@@ -26,6 +47,33 @@
                     <li><a href="admin-certificate-issuance.php" class="menu-item">Certificate Issuance</a></li>
                 </ul>
             </nav>
+            <div class="sidebar-footer">
+                <button onclick="confirmLogout()" class="btn-logout" type="button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5M17 16l4-4m0 0l-4-4m4 4H9"></path>
+                    </svg>
+                    <span>Logout</span>
+                </button>
+            </div>
+            
+            <script>
+            function confirmLogout() {
+                Swal.fire({
+                    title: 'Confirm Logout',
+                    text: 'Are you sure you want to logout? You will need to log in again to access the system.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#c33',
+                    cancelButtonColor: '#999',
+                    confirmButtonText: 'Yes, Logout',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'index.php?logout=1';
+                    }
+                });
+            }
+            </script>
         </aside>
 
         <!-- Main Content -->
@@ -76,6 +124,32 @@
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script src="js/main.js"></script>
-</body>
+    
+    <?php
+    // Display welcome notification if user just logged in
+    if (isset($_SESSION['first_login']) && $_SESSION['first_login']) {
+        $admin_name = isset($_SESSION['admin_name']) ? htmlspecialchars($_SESSION['admin_name']) : 'Admin';
+        ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Welcome!',
+                    text: 'Hello <?php echo $admin_name; ?>! Your account setup is complete and you have successfully logged in.',
+                    icon: 'success',
+                    confirmButtonColor: '#3a7675',
+                    timer: 4000,
+                    timerProgressBar: true,
+                    didClose: function() {
+                        // Optional: You can perform additional actions after the notification closes
+                    }
+                });
+            });
+        </script>
+        <?php
+        // Clear the flag so notification doesn't show again on refresh
+        unset($_SESSION['first_login']);
+    }
+    ?>
 </html>
