@@ -1,0 +1,149 @@
+/* Participant Scenarios Styling */
+
+.scenario-card {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.scenario-card:hover {
+    box-shadow: 0 4px 16px rgba(58, 118, 117, 0.15);
+}
+
+.scenario-header {
+    margin-bottom: 16px;
+}
+
+.scenario-type {
+    display: inline-block;
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    color: white;
+}
+
+.scenario-type.earthquake {
+    background: #d32f2f;
+}
+
+.scenario-type.fire {
+    background: #f57c00;
+}
+
+.scenario-type.flood {
+    background: #1976d2;
+}
+
+.scenario-type.typhoon {
+    background: #7b1fa2;
+}
+
+.scenario-type.medical {
+    background: #c2185b;
+}
+
+.scenario-card h3 {
+    font-size: 18px;
+    color: #1a202c;
+    margin: 12px 0;
+}
+
+.scenario-timeline {
+    margin: 20px 0;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.timeline-item:last-child {
+    border-bottom: none;
+}
+
+.timeline-marker {
+    min-width: 60px;
+    font-weight: 600;
+    color: #3a7675;
+    background: #e8f5e9;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.timeline-item p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.timeline-item p strong {
+    color: #1a202c;
+}
+
+.btn-read-more {
+    display: inline-block;
+    margin-top: 12px;
+}
+
+/* Scenario Modal */
+.scenario-modal-body {
+    padding: 20px 0;
+}
+
+.scenario-modal-body h2 {
+    font-size: 22px;
+    color: #1a202c;
+    margin-bottom: 20px;
+}
+
+.scenario-modal-body h3 {
+    font-size: 16px;
+    color: #1a202c;
+    margin-top: 20px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.scenario-modal-body p {
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+
+.scenario-modal-body ul {
+    list-style-position: inside;
+    color: #666;
+}
+
+.scenario-modal-body li {
+    margin: 8px 0;
+    line-height: 1.6;
+}
+
+.scenario-modal-body li strong {
+    color: #1a202c;
+}
+
+@media (max-width: 768px) {
+    .cards-container {
+        grid-template-columns: 1fr;
+    }
+
+    .scenario-timeline {
+        margin: 16px 0;
+    }
+
+    .timeline-marker {
+        min-width: 50px;
+        font-size: 12px;
+    }
+}
