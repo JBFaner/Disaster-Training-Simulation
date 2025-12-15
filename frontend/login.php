@@ -4,7 +4,7 @@ require_once __DIR__ . '/../api/EmailHelper.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['participant_id'])) {
-    header("Location: ../part-index.php");
+    header("Location: ../index.php");
     exit;
 }
 
@@ -117,7 +117,7 @@ if ($show_mfa && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mfa_code
         unset($_SESSION['mfa_code']);
         unset($_SESSION['mfa_pending']);
         
-        header("Location: ../part-index.php");
+        header("Location: ../index.php");
         exit;
     } else {
         $error_message = 'Invalid MFA code. Please try again.';
@@ -138,7 +138,7 @@ if (isset($_POST['verify_code'])) {
         unset($_SESSION['verification_pending']);
         unset($_SESSION['show_verification']);
         
-        header("Location: ../part-index.php");
+        header("Location: ../index.php");
         exit;
     } else {
         $error_message = 'Invalid verification code. Please try again.';

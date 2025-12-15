@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             unset($_SESSION['first_login']);
             
             $_SESSION['setup_success'] = true;
-            header("Location: index.php");
+            header("Location: ../index.php");
             exit;
         } else {
             $error_message = 'Invalid MFA code. Please check your email for the correct code.';

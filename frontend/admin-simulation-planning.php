@@ -18,7 +18,7 @@
             </div>
             <nav class="sidebar-menu">
                 <ul>
-                    <li><a href="index.php" class="menu-item">Dashboard</a></li>
+                    <li><a href="../index.php" class="menu-item">Dashboard</a></li>
                     <li><a href="admin-training-modules.php" class="menu-item">Training Modules</a></li>
                     <li><a href="admin-scenario-design.php" class="menu-item">Scenario Design</a></li>
                     <li><a href="admin-simulation-planning.php" class="menu-item active">Simulation Planning</a></li>
@@ -50,7 +50,7 @@
                     cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = 'index.php?logout=1';
+                        window.location.href = '../index.php?logout=1';
                     }
                 });
             }

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../api/EmailHelper.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['admin_id'])) {
-    header("Location: index.php");
+    header("Location: ../index.php");
     exit;
 }
 
