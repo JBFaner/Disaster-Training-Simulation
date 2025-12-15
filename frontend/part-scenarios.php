@@ -27,7 +27,7 @@ $participant_name = isset($_SESSION['participant_name']) ? htmlspecialchars($_SE
             </div>
             <nav class="sidebar-menu">
                 <ul>
-                    <li><a href="part-index.php" class="menu-item">Dashboard</a></li>
+                    <li><a href="../part-index.php" class="menu-item">Dashboard</a></li>
                     <li><a href="part-training-modules.php" class="menu-item">Training Modules</a></li>
                     <li><a href="part-my-events.php" class="menu-item">My Events</a></li>
                     <li><a href="part-scenarios.php" class="menu-item active">Scenarios</a></li>
@@ -56,7 +56,7 @@ $participant_name = isset($_SESSION['participant_name']) ? htmlspecialchars($_SE
                     <span></span>
                 </button>
                 <nav class="top-menu">
-                    <a href="part-index.php">Home</a>
+                    <a href="../part-index.php">Home</a>
                     <a href="part-training-modules.php">Training</a>
                     <a href="part-certificate.php">Certificates</a>
                     <a href="#contact">Contact</a>
@@ -381,7 +381,7 @@ $participant_name = isset($_SESSION['participant_name']) ? htmlspecialchars($_SE
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = 'part-index.php?logout=1';
+                    window.location.href = '../part-index.php?logout=1';
                 }
             });
         }
